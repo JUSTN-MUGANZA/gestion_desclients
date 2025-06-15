@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Le Gourmet - Gestion Clients</title>
+    <style>
+      /* Reset et styles de base */
+      :root {
+        --primary-color: #e74c3c;
+        --secondary-color: #3498db;
+        --dark-color: #2c3e50;
+        --light-color: #ecf0f1;
+        --success-color: #2ecc71;
+        --warning-color: #f39c12;
+        --text-dark: #333;
+        --text-light: #fff;
+        --bg-light: #fff;
+        --bg-dark: #1a1a1a;
+        --card-bg-light: #f9f9f9;
+        --card-bg-dark: #2d2d2d;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        transition: background-color 0.3s, color 0.3s;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        line-height: 1.6;
+        background-color: var(--bg-light);
+        color: var(--text-dark);
+      }
+
+      body.dark-mode {
+        background-color: var(--bg-dark);
+        color: var(--text-light);
+      }
+
+      .container {
+        width: 100%;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+      }
+
+      /* Header */
+      header {
+        background-color: var(--primary-color);
+        color: var(--text-light);
+        padding: 1rem 0;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      }
+
+      .dark-mode header {
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+      }
+
+      .header-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .logo {
+        font-size: 1.8rem;
+        font-weight: bold;
+      }
+
+      nav ul {
+        display: flex;
+        list-style: none;
+      }
+
+      nav ul li {
+        margin-left: 1.5rem;
+      }
+
+      nav ul li a {
+        color: var(--text-light);
+        text-decoration: none;
+        font-weight: 500;
+        padding: 0.5rem 1rem;
+        border-radius: 4px;
+      }
+
+      nav ul li a:hover {
+        background-color: rgba(255, 255, 255, 0.2);
+      }
+
+      .theme-toggle {
+        background: none;
+        border: none;
+        color: var(--text-light);
+        font-size: 1.2rem;
+        cursor: pointer;
+        padding: 0.5rem;
+        border-radius: 50%;
+      }
+
+      .theme-toggle:hover {
+        background-color: rgba(255, 255, 255, 0.2);
+      }
+
+      /* Hero Section */
+      .hero {
+        background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
+          url("https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80");
+        background-size: cover;
+        background-position: center;
+        height: 60vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        color: var(--text-light);
+        margin-bottom: 2rem;
+      }
+
+      .hero-content h1 {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+      }
+
+      .hero-content p {
+        font-size: 1.2rem;
+        margin-bottom: 2rem;
+        max-width: 800px;
+      }
+
+      .btn {
+        display: inline-block;
+        background-color: var(--primary-color);
+        color: var(--text-light);
+        padding: 0.8rem 1.5rem;
+        border: none;
+        border-radius: 4px;
+        text-decoration: none;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background-color 0.3s;
+      }
+
+      .btn:hover {
+        background-color: #c0392b;
+      }
+
+      .btn-secondary {
+        background-color: var(--secondary-color);
+      }
+
+      .btn-secondary:hover {
+        background-color: #2980b9;
+      }
+
+      /* Sections communes */
+      .section {
+        padding: 3rem 0;
+      }
+
+      .section-title {
+        text-align: center;
+        margin-bottom: 2rem;
+        font-size: 2rem;
+        color: var(--primary-color);
+      }
+
+      .card {
+        background-color: var(--card-bg-light);
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .dark-mode .card {
+        background-color: var(--card-bg-dark);
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+      }
+
+      /* Page d'accueil */
+      .features {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+        margin-top: 2rem;
+      }
+
+      .feature-card {
+        text-align: center;
+        padding: 2rem;
+      }
+
+      .feature-card i {
+        font-size: 3rem;
+        color: var(--primary-color);
+        margin-bottom: 1rem;
+      }
+
+      /* Menu */
+      .menu-items {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+      }
+
+      .menu-item {
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        overflow: hidden;
+      }
+
+      .dark-mode .menu-item {
+        border-color: #444;
+      }
+
+      .menu-item img {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+      }
+
+      .menu-item-content {
+        padding: 1.5rem;
+      }
+
+      .menu-item-title {
+        font-size: 1.3rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .menu-item-price {
+        font-weight: bold;
+        color: var(--primary-color);
+        font-size: 1.2rem;
+        margin-bottom: 1rem;
+      }
+
+      /* Formulaire de réservation */
+      .reservation-form {
+        max-width: 600px;
+        margin: 0 auto;
+      }
+
+      .form-group {
+        margin-bottom: 1.5rem;
+      }
+
+      .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+      }
+
+      .form-control {
+        width: 100%;
+        padding: 0.8rem;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 1rem;
+      }
+
+      .dark-mode .form-control {
+        background-color: #333;
+        color: var(--text-light);
+        border-color: #555;
+      }
+
+      /* Tableau admin */
+      .admin-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 1.5rem;
+      }
+
+      .admin-table th,
+      .admin-table td {
+        padding: 1rem;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+      }
+
+      .dark-mode .admin-table th,
+      .dark-mode .admin-table td {
+        border-bottom-color: #444;
+      }
+
+      .admin-table th {
+        background-color: var(--primary-color);
+        color: var(--text-light);
+      }
+
+      .status-pending {
+        color: var(--warning-color);
+      }
+
+      .status-confirmed {
+        color: var(--success-color);
+      }
+
+      /* Formulaire de connexion */
+      .login-form {
+        max-width: 400px;
+        margin: 0 auto;
+        background-color: var(--card-bg-light);
+        padding: 2rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .dark-mode .login-form {
+        background-color: var(--card-bg-dark);
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+      }
+
+      /* Contact */
+      .contact-info {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+        margin-top: 2rem;
+      }
+
+      .contact-card {
+        text-align: center;
+        padding: 2rem;
+      }
+
+      .contact-card i {
+        font-size: 2rem;
+        color: var(--primary-color);
+        margin-bottom: 1rem;
+      }
+
+      .map-container {
+        height: 400px;
+        margin-top: 2rem;
+      }
+
+      .map-container iframe {
+        width: 100%;
+        height: 100%;
+        border: none;
+        border-radius: 8px;
+      }
+
+      /* Footer */
+      footer {
+        background-color: var(--dark-color);
+        color: var(--text-light);
+        padding: 2rem 0;
+        text-align: center;
+        margin-top: 2rem;
+      }
+
+      .footer-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .social-links {
+        margin: 1rem 0;
+      }
+
+      .social-links a {
+        color: var(--text-light);
+        margin: 0 0.5rem;
+        font-size: 1.5rem;
+        text-decoration: none;
+      }
+
+      /* Responsive */
+      @media (max-width: 768px) {
+        .header-container {
+          flex-direction: column;
+        }
+
+        nav ul {
+          margin-top: 1rem;
+        }
+
+        nav ul li {
+          margin-left: 1rem;
+          margin-right: 1rem;
+        }
+
+        .hero-content h1 {
+          font-size: 2rem;
+        }
+
+        .hero-content p {
+          font-size: 1rem;
+        }
+      }
+
+      @media (max-width: 480px) {
+        nav ul {
+          flex-direction: column;
+          align-items: center;
+        }
+
+        nav ul li {
+          margin: 0.5rem 0;
+        }
+
+        .hero {
+          height: 50vh;
+        }
+      }
+
+      /* Page cachée par défaut */
+      .page {
+        display: none;
+      }
+
+      .page.active {
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Header -->
+    <header>
+      <div class="container header-container">
+        <div class="logo">Le Gourmet</div>
+        <nav>
+          <ul>
+            <li><a href="#" onclick="showPage('home')">Accueil</a></li>
+            <li><a href="#" onclick="showPage('menu')">Menu</a></li>
+            <li>
+              <a href="#" onclick="showPage('reservation')">Réservation</a>
+            </li>
+            <li><a href="#" onclick="showPage('contact')">Contact</a></li>
+            <li><a href="#" onclick="showPage('login')">Admin</a></li>
+          </ul>
+        </nav>
+        <button class="theme-toggle" onclick="toggleTheme()">🌓</button>
+      </div>
+    </header>
+
+    <!-- Page d'accueil -->
+    <section id="home" class="page active">
+      <div class="hero">
+        <div class="hero-content">
+          <h1>Bienvenue au Restaurant Le Gourmet</h1>
+          <p>
+            Découvrez une expérience culinaire exceptionnelle avec nos plats
+            préparés avec des ingrédients frais et locaux.
+          </p>
+          <a href="#" class="btn" onclick="showPage('reservation')"
+            >Réserver une table</a
+          >
+        </div>
+      </div>
+
+      <div class="container">
+        <div class="section">
+          <h2 class="section-title">Nos Services</h2>
+          <div class="features">
+            <div class="feature-card card">
+              <i>🍽️</i>
+              <h3>Cuisine raffinée</h3>
+              <p>
+                Notre chef étoilé prépare des plats exceptionnels avec des
+                produits de saison.
+              </p>
+            </div>
+            <div class="feature-card card">
+              <i>🍷</i>
+              <h3>Carte des vins</h3>
+              <p>
+                Une sélection exceptionnelle de vins pour accompagner vos plats.
+              </p>
+            </div>
+            <div class="feature-card card">
+              <i>🎉</i>
+              <h3>Événements</h3>
+              <p>Organisez vos événements privés dans notre espace dédié.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Page Menu -->
+    <section id="menu" class="page">
+      <div class="container">
+        <div class="section">
+          <h2 class="section-title">Notre Menu</h2>
+          <div class="menu-items">
+            <div class="menu-item card">
+              <img
+                src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+                alt="Salade César"
+              />
+              <div class="menu-item-content">
+                <h3 class="menu-item-title">Salade César</h3>
+                <p class="menu-item-description">
+                  Laitue romaine, croûtons, parmesan et sauce césar maison.
+                </p>
+                <p class="menu-item-price">12,50 €</p>
+              </div>
+            </div>
+            <div class="menu-item card">
+              <img
+                src="https://images.unsplash.com/photo-1565557623262-b51c2513a641?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+                alt="Steak Frites"
+              />
+              <div class="menu-item-content">
+                <h3 class="menu-item-title">Steak Frites</h3>
+                <p class="menu-item-description">
+                  Entrecôte de bœuf Angus, frites maison et sauce au choix.
+                </p>
+                <p class="menu-item-price">22,90 €</p>
+              </div>
+            </div>
+            <div class="menu-item card">
+              <img
+                src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+                alt="Pizza Margherita"
+              />
+              <div class="menu-item-content">
+                <h3 class="menu-item-title">Pizza Margherita</h3>
+                <p class="menu-item-description">
+                  Pâte fine, sauce tomate, mozzarella di buffala et basilic
+                  frais.
+                </p>
+                <p class="menu-item-price">14,50 €</p>
+              </div>
+            </div>
+            <div class="menu-item card">
+              <img
+                src="https://images.unsplash.com/photo-1563805042-7684c019e1cb?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+                alt="Dessert du Chef"
+              />
+              <div class="menu-item-content">
+                <h3 class="menu-item-title">Dessert du Chef</h3>
+                <p class="menu-item-description">
+                  Une création sucrée surprise préparée chaque jour par notre
+                  pâtissier.
+                </p>
+                <p class="menu-item-price">8,90 €</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Page Réservation -->
+    <section id="reservation" class="page">
+      <div class="container">
+        <div class="section">
+          <h2 class="section-title">Réserver une table</h2>
+          <div class="reservation-form card">
+            <form id="bookingForm">
+              <div class="form-group">
+                <label for="name">Nom complet</label>
+                <input type="text" id="name" class="form-control" required />
+              </div>
+              <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" class="form-control" required />
+              </div>
+              <div class="form-group">
+                <label for="phone">Téléphone</label>
+                <input type="tel" id="phone" class="form-control" required />
+              </div>
+              <div class="form-group">
+                <label for="date">Date</label>
+                <input type="date" id="date" class="form-control" required />
+              </div>
+              <div class="form-group">
+                <label for="time">Heure</label>
+                <input type="time" id="time" class="form-control" required />
+              </div>
+              <div class="form-group">
+                <label for="guests">Nombre de personnes</label>
+                <select id="guests" class="form-control" required>
+                  <option value="1">1 personne</option>
+                  <option value="2">2 personnes</option>
+                  <option value="3">3 personnes</option>
+                  <option value="4">4 personnes</option>
+                  <option value="5">5 personnes</option>
+                  <option value="6">6 personnes</option>
+                  <option value="7">7 personnes</option>
+                  <option value="8">8+ personnes</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="notes">Demandes spéciales</label>
+                <textarea id="notes" class="form-control" rows="4"></textarea>
+              </div>
+              <button type="submit" class="btn">
+                Confirmer la réservation
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Page Connexion Admin -->
+    <section id="login" class="page">
+      <div class="container">
+        <div class="section">
+          <h2 class="section-title">Connexion Admin</h2>
+          <div class="login-form card">
+            <form id="adminLoginForm">
+              <div class="form-group">
+                <label for="username">Nom d'utilisateur</label>
+                <input
+                  type="text"
+                  id="username"
+                  class="form-control"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label for="password">Mot de passe</label>
+                <input
+                  type="password"
+                  id="password"
+                  class="form-control"
+                  required
+                />
+              </div>
+              <button type="submit" class="btn">Se connecter</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Page Admin (Clients) -->
+    <section id="admin" class="page">
+      <div class="container">
+        <div class="section">
+          <div
+            style="
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+            "
+          >
+            <h2 class="section-title">Gestion des Clients</h2>
+            <button class="btn btn-secondary" onclick="showPage('home')">
+              Retour au site
+            </button>
+          </div>
+
+          <div class="card">
+            <h3>Réservations à venir</h3>
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Nom</th>
+                  <th>Date</th>
+                  <th>Heure</th>
+                  <th>Personnes</th>
+                  <th>Statut</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="reservationsTable">
+                <!-- Les réservations seront ajoutées dynamiquement -->
+              </tbody>
+            </table>
+          </div>
+
+          <div class="card" style="margin-top: 2rem">
+            <h3>Historique des clients</h3>
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Nom</th>
+                  <th>Email</th>
+                  <th>Téléphone</th>
+                  <th>Visites</th>
+                  <th>Préférences</th>
+                </tr>
+              </thead>
+              <tbody id="clientsTable">
+                <!-- Les clients seront ajoutés dynamiquement -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Page Contact -->
+    <section id="contact" class="page">
+      <div class="container">
+        <div class="section">
+          <h2 class="section-title">Contactez-nous</h2>
+          <div class="contact-info">
+            <div class="contact-card card">
+              <i>📞</i>
+              <h3>Téléphone</h3>
+              <p>01 23 45 67 89</p>
+            </div>
+            <div class="contact-card card">
+              <i>✉️</i>
+              <h3>Email</h3>
+              <p>contact@legourmet.com</p>
+            </div>
+            <div class="contact-card card">
+              <i>📍</i>
+              <h3>Adresse</h3>
+              <p>123 Rue Gastronomique, 75000 Paris</p>
+            </div>
+          </div>
+
+          <div class="card" style="margin-top: 2rem">
+            <h3>Formulaire de contact</h3>
+            <form id="contactForm">
+              <div class="form-group">
+                <label for="contactName">Nom</label>
+                <input
+                  type="text"
+                  id="contactName"
+                  class="form-control"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label for="contactEmail">Email</label>
+                <input
+                  type="email"
+                  id="contactEmail"
+                  class="form-control"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label for="contactSubject">Sujet</label>
+                <input
+                  type="text"
+                  id="contactSubject"
+                  class="form-control"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label for="contactMessage">Message</label>
+                <textarea
+                  id="contactMessage"
+                  class="form-control"
+                  rows="5"
+                  required
+                ></textarea>
+              </div>
+              <button type="submit" class="btn">Envoyer le message</button>
+            </form>
+          </div>
+
+          <div class="map-container card" style="margin-top: 2rem">
+            <iframe
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2624.991625693759!2d2.292292615509614!3d48.85837007928746!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47e66e2964e34e2d%3A0x8ddca9ee380ef7e0!2sTour%20Eiffel!5e0!3m2!1sfr!2sfr!4v1623864873573!5m2!1sfr!2sfr"
+              allowfullscreen=""
+              loading="lazy"
+            ></iframe>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+      <div class="container footer-content">
+        <div class="logo" style="margin-bottom: 1rem">Le Gourmet</div>
+        <div class="social-links">
+          <a href="#">📱</a>
+          <a href="#">📘</a>
+          <a href="#">📸</a>
+          <a href="#">🐦</a>
+        </div>
+        <p>© 2025 BAC 2 IG GROUPE 1 TP MARKETING TOUS DROIT RÉSERVÉ</p>
+      </div>
+    </footer>
+
+    <script>
+      // Gestion du thème clair/sombre
+      function toggleTheme() {
+          document.body.classList.toggle('dark-mode');
+          localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+      }
+
+      // Vérifier le thème au chargement
+      if (localStorage.getItem('darkMode') === 'true') {
+          document.body.classList.add('dark-mode');
+      }
+
+      // Gestion de la navigation entre pages
+      function showPage(pageId) {
+          // Masquer toutes les pages
+          document.querySelectorAll('.page').forEach(page => {
+              page.classList.remove('active');
+          });
+
+          // Afficher la page demandée
+          document.getElementById(pageId).classList.add('active');
+
+          // Si c'est la page admin, charger les données
+          if (pageId === 'admin') {
+              loadReservations();
+              loadClients();
+          }
+
+          // Faire défiler vers le haut
+          window.scrollTo(0, 0);
+      }
+
+      // Gestion du formulaire de réservation
+      document.getElementById('bookingForm').addEventListener('submit', function(e) {
+          e.preventDefault();
+
+          // Récupérer les valeurs du formulaire
+          const name = document.getElementById('name').value;
+          const email = document.getElementById('email').value;
+          const phone = document.getElementById('phone').value;
+          const date = document.getElementById('date').value;
+          const time = document.getElementById('time').value;
+          const guests = document.getElementById('guests').value;
+          const notes = document.getElementById('notes').value;
+
+          // Stocker la réservation (dans un cas réel, on enverrait au serveur)
+          const reservations = JSON.parse(localStorage.getItem('reservations') || [];
+          reservations.push({
+              id: Date.now(),
+              name,
+              email,
+              phone,
+              date,
+              time,
+              guests,
+              notes,
+              status: 'pending'
+          });
+          localStorage.setItem('reservations', JSON.stringify(reservations));
+
+          // Afficher un message de confirmation
+          alert('Votre réservation a été enregistrée avec succès !');
+
+          // Réinitialiser le formulaire
+          this.reset();
+      });
+
+      // Gestion du formulaire de connexion admin
+      document.getElementById('adminLoginForm').addEventListener('submit', function(e) {
+          e.preventDefault();
+
+          const username = document.getElementById('username').value;
+          const password = document.getElementById('password').value;
+
+          // Vérification simple (en production, utiliser une authentification sécurisée)
+          if (username === 'admin' && password === 'admin123') {
+              showPage('admin');
+          } else {
+              alert('Identifiants incorrects');
+          }
+      });
+
+      // Gestion du formulaire de contact
+      document.getElementById('contactForm').addEventListener('submit', function(e) {
+          e.preventDefault();
+
+          // Récupérer les valeurs
+          const name = document.getElementById('contactName').value;
+          const email = document.getElementById('contactEmail').value;
+          const subject = document.getElementById('contactSubject').value;
+          const message = document.getElementById('contactMessage').value;
+
+          // Stocker le message (en production, envoyer au serveur)
+          const messages = JSON.parse(localStorage.getItem('contactMessages') || [];
+          messages.push({
+              id: Date.now(),
+              name,
+              email,
+              subject,
+              message,
+              date: new Date().toISOString()
+          });
+          localStorage.setItem('contactMessages', JSON.stringify(messages));
+
+          // Afficher un message de confirmation
+          alert('Votre message a été envoyé avec succès !');
+
+          // Réinitialiser le formulaire
+          this.reset();
+      });
+
+      // Charger les réservations pour la page admin
+      function loadReservations() {
+          const reservations = JSON.parse(localStorage.getItem('reservations') || '[]');
+          const tableBody = document.getElementById('reservationsTable');
+          tableBody.innerHTML = '';
+
+          reservations.forEach(reservation => {
+              const row = document.createElement('tr');
+              row.innerHTML = `
+                  <td>${reservation.name}</td>
+                  <td>${new Date(reservation.date).toLocaleDateString()}</td>
+                  <td>${reservation.time}</td>
+                  <td>${reservation.guests}</td>
+                  <td class="status-${reservation.status}">${reservation.status === 'pending' ? 'En attente' : 'Confirmée'}</td>
+                  <td>
+                      <button onclick="confirmReservation(${reservation.id})" class="btn" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;">Confirmer</button>
+                      <button onclick="cancelReservation(${reservation.id})" class="btn" style="padding: 0.3rem 0.6rem; font-size: 0.8rem; background-color: var(--warning-color);">Annuler</button>
+                  </td>
+              `;
+              tableBody.appendChild(row);
+          });
+      }
+
+      // Charger les clients pour la page admin
+      function loadClients() {
+          // Simuler des données clients (en production, récupérer depuis une API)
+          const clients = [
+              {
+                  name: "Jean Dupont",
+                  email: "jean.dupont@example.com",
+                  phone: "01 23 45 67 89",
+                  visits: 5,
+                  preferences: "Table près de la fenêtre, vin rouge"
+              },
+              {
+                  name: "Marie Martin",
+                  email: "marie.martin@example.com",
+                  phone: "06 12 34 56 78",
+                  visits: 3,
+                  preferences: "Cuisine végétarienne"
+              },
+              {
+                  name: "Pierre Durand",
+                  email: "pierre.durand@example.com",
+                  phone: "07 89 12 34 56",
+                  visits: 7,
+                  preferences: "Dessert du chef"
+              }
+          ];
+
+          const tableBody = document.getElementById('clientsTable');
+          tableBody.innerHTML = '';
+
+          clients.forEach(client => {
+              const row = document.createElement('tr');
+              row.innerHTML = `
+                  <td>${client.name}</td>
+                  <td>${client.email}</td>
+                  <td>${client.phone}</td>
+                  <td>${client.visits}</td>
+                  <td>${client.preferences}</td>
+              `;
+              tableBody.appendChild(row);
+          });
+      }
+
+      // Confirmer une réservation
+      function confirmReservation(id) {
+          const reservations = JSON.parse(localStorage.getItem('reservations') || '[]');
+          const updatedReservations = reservations.map(res => {
+              if (res.id === id) {
+                  return { ...res, status: 'confirmed' };
+              }
+              return res;
+          });
+          localStorage.setItem('reservations', JSON.stringify(updatedReservations));
+          loadReservations();
+      }
+
+      // Annuler une réservation
+      function cancelReservation(id) {
+          const reservations = JSON.parse(localStorage.getItem('reservations') || '[]');
+          const updatedReservations = reservations.filter(res => res.id !== id);
+          localStorage.setItem('reservations', JSON.stringify(updatedReservations));
+          loadReservations();
+      }
+    </script>
+  </body>
+</html>
